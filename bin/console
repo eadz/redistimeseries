@@ -11,4 +11,11 @@ require "redistimeseries"
 # Pry.start
 
 require "irb"
+
+require "redis"
+
+using Redistimeseries::RedisRefinement
+
+@redis = Redis.new(host: "recmon.red")
+
 IRB.start(__FILE__)
