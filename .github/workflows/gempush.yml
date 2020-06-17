@@ -23,10 +23,12 @@ jobs:
       with:
         version: 2.6.x
     - name: Debug Info
+      env:
+        REDIS_PORT: ${{ job.services.redis.ports[6379] }}
       run: |
         sudo apt-get install redis-tools
-        redis-cli info
-        redis-cli TS.CREATE mytestkey
+        redis-cli -p $REDIS_PORT info
+        redis-cli -p $REDIS_PORT TS.CREATE mytestkey
     - name: Bundle install
       run: |
         gem install bundler:2.1.2
