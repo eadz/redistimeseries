@@ -11,11 +11,11 @@ jobs:
     name: Build + Publish
     runs-on: ubuntu-latest
     services:
-      redis:
+      redistimeseries:
         image: redislabs/redistimeseries:latest
         ports:
           - 6379/tcp
-        options: --entrypoint redis-server
+        # options: --entrypoint redis-server
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby 2.6
