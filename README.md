@@ -18,6 +18,30 @@ Or install it yourself as:
 
 ## Usage
 
+RedisTimeSeries gem uses Ruby's refinement to add timeseries methods to the Redis gem.
+
+You need to include the line
+
+```ruby
+using Redistimeseries::RedisRefinement
+```
+
+in files which use the redis timeseries functions.
+
+### done
+
+```ruby
+ts_create(key:, retention: nil, uncompressed: false, labels: [])
+ts_add(key:, timestamp: "*", value:, retention: nil, labels: [])
+ts_madd(key:, timestamp: "*", value:)
+ts_range(key:, from: 0, to: nil, count: nil, aggtype: nil, timebucket: nil)
+ts_info(key:)
+```
+
+### todo
+
+
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
