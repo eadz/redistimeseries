@@ -24,7 +24,7 @@ jobs:
         version: 2.6.x
     - name: Debug Info
       run: |
-        sudo apt-get install redis-cli
+        sudo apt-get install redis-tools
         redis-cli info
         redis-cli TS.CREATE mytestkey
     - name: Bundle install
