@@ -27,9 +27,10 @@ jobs:
         gem install bundler:2.1.2
         bundle install
     - name: Run specs
+      env:
+        REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}
       run: |
         ./bin/rspec
-
     - name: Publish to RubyGems
       run: |
         mkdir -p $HOME/.gem
