@@ -24,7 +24,7 @@ jobs:
         version: 2.6.x
     - name: Debug Info
       env:
-        REDIS_PORT: ${{ job.services.redis.ports[6379] }}
+        REDIS_PORT: ${{ job.services.redistimeseries.ports[6379] }}
       run: |
         sudo apt-get install redis-tools
         redis-cli -p ${REDIS_PORT} info
@@ -35,7 +35,7 @@ jobs:
         bundle install
     - name: Run specs
       env:
-        REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}
+        REDIS_URL: redis://localhost:${{ job.services.redistimeseries.ports[6379] }}
       run: |
         ./bin/rspec
     - name: Publish to RubyGems
