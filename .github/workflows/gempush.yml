@@ -24,6 +24,7 @@ jobs:
         version: 2.6.x
     - name: Bundle install
       run: |
+        gem install bundler:2.1.2
         bundle install
     - name: Run specs
       run: |

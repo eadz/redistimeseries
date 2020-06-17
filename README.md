@@ -1,5 +1,7 @@
 # Redistimeseries
 
+![Ruby Gem](https://github.com/eadz/redistimeseries/workflows/Ruby%20Gem/badge.svg)
+
 ## Installation
 
 Add this line to your application's Gemfile:
