@@ -45,7 +45,9 @@ module Redistimeseries
       end
 
       def ts_mrange; end
+
       def ts_get; end
+
       def ts_mget; end
 
       def ts_info(key:)

@@ -25,12 +25,15 @@ RedisTimeSeries gem uses Ruby's refinement to add timeseries methods to the Redi
 You need to include the line
 
 ```ruby
+require 'redistimeseries'
 using Redistimeseries::RedisRefinement
+
+client = Redis.new
+client.ts_create(key: "mytimeseries")
+client.ts_add(key: "mytimeseries", value: 141)
 ```
 
-in files which use the redis timeseries functions.
-
-### done
+# Methods - see redis_refinement.rb
 
 ```ruby
 ts_create(key:, retention: nil, uncompressed: false, labels: [])

@@ -9,8 +9,8 @@ GIT
 PATH
   remote: .
   specs:
-    redistimeseries (0.1.0)
-      redis (>= 4)
+    redistimeseries (0.1.1)
+      redis (~> 4)
 
 GEM
   remote: https://rubygems.org/
