@@ -1,4 +1,4 @@
-name: Ruby Gem
+name: CI Build
 
 on:
   push:
