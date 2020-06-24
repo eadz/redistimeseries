@@ -31,6 +31,7 @@ using Redistimeseries::RedisRefinement
 client = Redis.new
 client.ts_create(key: "mytimeseries")
 client.ts_add(key: "mytimeseries", value: 141)
+client.ts_get("mytimeseries")
 ```
 
 # Methods - see redis_refinement.rb

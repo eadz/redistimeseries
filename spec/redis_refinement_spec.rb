@@ -29,4 +29,29 @@ RSpec.describe Redistimeseries::RedisRefinement do
       expect(client.ts_range(key: key, count: 2).size).to eq(2)
     end
   end
+
+  describe "ts_get" do
+    before do
+      client.ts_create(key: key)
+      client.ts_add(key: key, value: 999)
+    end
+    it "get a value" do
+      res = client.ts_get(key)
+      expect(res.last).to eq("999")
+    end
+  end
+
+  describe "ts_madd" do
+    let(:key2) { key + "2" }
+    before do
+      client.ts_create(key: key)
+      client.ts_create(key: key2)
+    end
+    it "can add multiple key/values" do
+      client.ts_madd([key, '*', 5, key2, '*', 30])
+      sleep 0.001 # bug in redis-timeseries. https://github.com/RedisTimeSeries/RedisTimeSeries/issues/333
+      client.ts_madd([key, '*', 3, key2, '*', 10])
+      expect(client.ts_range(key: key2, aggtype: 'sum', timebucket: 10_000).last.last).to eq("40")
+    end
+  end
 end
