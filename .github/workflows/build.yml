@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    branches: [ gem ]
+
+jobs:
+  build:
+    name: Build + Publish
+    runs-on: ubuntu-latest
+    services:
+      redistimeseries:
+        image: redislabs/redistimeseries:latest
+        ports:
+          - 6379/tcp
+        # options: --entrypoint redis-server
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        version: 2.6.x
+    - name: Debug Info
+      env:
+        REDIS_PORT: ${{ job.services.redistimeseries.ports[6379] }}
+      run: |
+        sudo apt-get install redis-tools
+        redis-cli -p ${REDIS_PORT} info
+        redis-cli -p ${REDIS_PORT} TS.CREATE mytestkey
+    - name: Bundle install
+      run: |
+        gem install bundler:2.1.2
+        bundle install
+    - name: Run specs
+      env:
+        REDIS_URL: redis://localhost:${{ job.services.redistimeseries.ports[6379] }}
+      run: |
+        ./bin/rspec
+    - name: Publish to RubyGems
+      run: |
+        mkdir -p $HOME/.gem
+        touch $HOME/.gem/credentials
+        chmod 0600 $HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        gem build *.gemspec
+        gem push *.gem
+      env:
+        GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}

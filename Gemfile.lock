@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    redistimeseries (0.1.1)
+    redistimeseries (0.1.2)
       redis (~> 4)
 
 GEM
