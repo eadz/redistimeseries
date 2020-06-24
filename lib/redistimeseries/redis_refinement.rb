@@ -20,8 +20,11 @@ module Redistimeseries
         _ts_call(cmd)
       end
 
-      def ts_madd(key:, timestamp: "*", value:) # TODO make multi
-        cmd = ['TS.MADD', key, timestamp, value]
+      # Usage:
+      # ts_madd([key, timestamp, value, key, timestamp, value])
+      # or ts_madd([[key, timestamp, value], [key, timestamp, value]])
+      def ts_madd(key_timestamp_values)
+        cmd = ['TS.MADD', *key_timestamp_values.flatten]
         _ts_call(cmd)
       end
 
@@ -29,40 +32,68 @@ module Redistimeseries
 
       def ts_decrby; end
 
-      def ts_createrule; end
-
-      def ts_deleterule; end
-
-      def ts_range(key:, from: 0, to: nil, count: nil, aggtype: nil, timebucket: nil)
-        to_time = to || (Time.now.to_f * 1000.0).to_i
-        cmd = ['TS.RANGE', key, from, to_time]
-        if count
-          cmd += ['COUNT', count]
-        else
-          cmd += ['AGGREGATION', aggtype, timebucket]
-        end
+      def ts_createrule(source_key:, dest_key:, aggregation_type:, timebucket:)
+        cmd = ["TS.CREATERULE", source_key, dest_key]
+        cmd += ["AGGREGATION", aggregation_type, timebucket]
         _ts_call(cmd)
       end
 
-      def ts_mrange; end
+      def ts_deleterule; end
 
-      def ts_get; end
+      def ts_range(key:, from: '-', to: '+', count: nil, aggtype: nil, timebucket: nil)
+        cmd = ['TS.RANGE', key, from, to]
+        cmd += ['COUNT', count] if count
+        cmd += ['AGGREGATION', aggtype, timebucket] if aggtype && timebucket
+        _ts_call(cmd)
+      end
 
-      def ts_mget; end
+      def ts_mrange(from_timestamp:, to_timestamp:,
+                    aggregation_type: nil, time_bucket: nil,
+                    count: nil, with_labels: false, filters: [])
+
+        cmd = ["TS.MRANGE", from_timestamp, to_timestamp]
+        cmd += ["COUNT", count] if count
+
+        if aggregation_type && time_bucket
+          cmd += ["AGGREGATION", aggregation_type, time_bucket]
+        end
+
+        cmd += ["WITHLABELS"] if with_labels
+        cmd += ["FILTER", *filters] if filters.length.positive?
+
+        _ts_call(cmd)
+      end
+
+      def ts_get(key)
+        cmd = ["TS.GET", key]
+        _ts_call(cmd)
+      end
+
+      def ts_mget(filters:, withlabels: false)
+        cmd = []
+        cmd += ["WITHLABELS"] if withlabels
+        cmd += ["FILTER", *filters]
+        _ts_call(cmd)
+      end
 
       def ts_info(key:)
         cmd = ["TS.INFO", key]
         _ts_call(cmd)
       end
 
-      def ts_queryindex(filter:)
-        cmd = ["TS.QUERYINDEX", filter]
+      def ts_queryindex(filters:)
+        cmd = ["TS.QUERYINDEX", *filters]
         _ts_call(cmd)
       end
 
-      def _ts_call(cmd)
+      def _ts_call(args)
         # puts "CMD #{cmd.join(' ')}"
-        call cmd
+        synchronize do |client|
+          res = client.call(args)
+          raise res.first if res.is_a?(Array) && res.first.is_a?(Redis::CommandError)
+
+          res
+        end
       end
     end
   end
