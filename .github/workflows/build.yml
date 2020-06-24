@@ -1,12 +1,8 @@
-name: CI Build
+name: Publish Gem
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-  schedule:
-    - cron: '0 0 * * *' # Nightly to cover cases where the server might breaks the client
+    branches: [ gem ]
 
 jobs:
   build:
@@ -40,13 +36,13 @@ jobs:
         REDIS_URL: redis://localhost:${{ job.services.redistimeseries.ports[6379] }}
       run: |
         ./bin/rspec
-    # - name: Publish to RubyGems
-    #   run: |
-    #     mkdir -p $HOME/.gem
-    #     touch $HOME/.gem/credentials
-    #     chmod 0600 $HOME/.gem/credentials
-    #     printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-    #     gem build *.gemspec
-    #     gem push *.gem
-    #   env:
-    #     GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
+    - name: Publish to RubyGems
+      run: |
+        mkdir -p $HOME/.gem
+        touch $HOME/.gem/credentials
+        chmod 0600 $HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        gem build *.gemspec
+        gem push *.gem
+      env:
+        GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
